@@ -7,6 +7,8 @@ import Logo from "./components/Logo";
 import SearchForm from "./components/SearchForm";
 import WatchListButton from "./components/WatchListButton";
 
+
+
 import MovieList from "./components/MovieList";
 import WatchList from "./components/WatchList";
 
