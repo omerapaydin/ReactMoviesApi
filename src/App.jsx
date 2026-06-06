@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import Main from "./components/Main";
 
 import Logo from "./components/Logo";
+import Loading from "./components/Loading";
 import SearchForm from "./components/SearchForm";
 import WatchListButton from "./components/WatchListButton";
 
@@ -21,14 +22,18 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [watchListMovies, setWatchListMovies] = useState([]);
   const [isWatchListOpen, setIsWatchListOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
 useEffect(() => {
      async function getMovies(){
+      setIsLoading(true);
       const response = await fetch(
     `https://api.themoviedb.org/3/search/movie?api_key=${api_key}&query=${query}&page=${page}&language=${language}`);
     const data = await response.json();
     setMovies(data.results);
+    setIsLoading(false);
      }
+     
      getMovies();
         
   }, []);
@@ -62,7 +67,8 @@ useEffect(() => {
           isWatchListOpen={isWatchListOpen}
           onRemoveFromWatchList={handleRemoveFromWatchList}
         />
-        <MovieList movies={movies} onAddToList={handleAddToWatchList} />
+        {isLoading ? <Loading /> : <MovieList movies={movies} onAddToList={handleAddToWatchList} />}
+       
       </Main>
       <Footer />
     </>
