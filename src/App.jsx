@@ -1,122 +1,65 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState } from "react";
+import Footer from "./components/Footer";
+import Header from "./components/Header";
+import Main from "./components/Main";
 
-function App() {
-  const [count, setCount] = useState(0)
+import Logo from "./components/Logo";
+import SearchForm from "./components/SearchForm";
+import WatchListButton from "./components/WatchListButton";
+
+import MovieList from "./components/MovieList";
+import WatchList from "./components/WatchList";
+
+const api_key = "9394fb08eb73fd225d415dd17bb8eb01";
+const page = 1;
+const query = "batman";
+const language = "tr-TR";
+
+export default function App() {
+  const [movies, setMovies] = useState([]);
+  const [watchListMovies, setWatchListMovies] = useState([]);
+  const [isWatchListOpen, setIsWatchListOpen] = useState(false);
+
+  fetch(
+    `https://api.themoviedb.org/3/search/movie?api_key=${api_key}&query=${query}&page=${page}&language=${language}`
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      setMovies(data.results);
+    });
+
+  function handleAddToWatchList(movie) {
+    const isAddedToList = watchListMovies.map((i) => i.id).includes(movie.id);
+
+    if (!isAddedToList) {
+      setWatchListMovies((movies) => [...movies, movie]);
+    }
+  }
+
+  function handleRemoveFromWatchList(movie) {
+    setWatchListMovies((movies) => movies.filter((i) => i.id !== movie.id));
+  }
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      <Header>
+        <Logo />
+        <SearchForm />
+        <WatchListButton
+          movies={watchListMovies}
+          onSetIsWatchListOpen={setIsWatchListOpen}
+        />
+      </Header>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+      <Main>
+        <WatchList
+          movies={watchListMovies}
+          isWatchListOpen={isWatchListOpen}
+          onRemoveFromWatchList={handleRemoveFromWatchList}
+        />
+        <MovieList movies={movies} onAddToList={handleAddToWatchList} />
+      </Main>
+      <Footer />
     </>
-  )
+  );
 }
-
-export default App
